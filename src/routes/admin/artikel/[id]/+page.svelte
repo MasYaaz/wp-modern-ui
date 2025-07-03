@@ -1,80 +1,82 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getPosts, updatePost } from '$lib/api/wordpress';
+	import TiptapEditor from '$lib/components/TiptapEditor.svelte';
+	import { getPost, updatePost, uploadMedia } from '$lib/api/wordpress';
 
-	export let data: { id: number };
+	let post: any = null;
+	let title = '';
+	let content = '';
+	let featuredImage = '';
+	let featuredImageId: number | null = null;
 
-	let title = '', content = '', loading = true, saving = false, error = '', success = '';
+	let error = '';
+	let success = '';
+	let loading = true;
+	let saving = false;
+
+	const id = $page.params.id;
 
 	onMount(async () => {
-		const token = localStorage.getItem('token');
-		if (!token) return goto('/login');
-
 		try {
-			const post = await getPosts(data.id);
+			post = await getPost(Number(id));
 			title = post.title.rendered;
-			content = post.content.raw ?? post.content.rendered;
+			content = post.content.rendered;
+			featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
+			featuredImageId = post.featured_media;
 		} catch (err: any) {
-			error = err.message;
+			error = 'Gagal memuat artikel.';
 		} finally {
 			loading = false;
 		}
 	});
 
-	async function savePost() {
+	async function save() {
 		saving = true;
 		error = '';
 		success = '';
 		try {
-			await updatePost(data.id, {
+			await updatePost(Number(id), {
 				title,
 				content,
-				status: 'publish'
+				featured_media: featuredImageId
 			});
-			success = 'Post berhasil disimpan';
+			success = 'Artikel berhasil diperbarui.';
 		} catch (err: any) {
-			error = err.message;
+			error = err.message || 'Gagal menyimpan perubahan.';
 		} finally {
 			saving = false;
 		}
 	}
+
+	async function handleImageUpload(event: Event) {
+		const file = (event.target as HTMLInputElement)?.files?.[0];
+		if (!file) return;
+		try {
+			const res = await uploadMedia(file);
+			featuredImage = res.source_url;
+			featuredImageId = res.id;
+		} catch (e: any) {
+			error = e.message || 'Upload gambar gagal.';
+		}
+	}
 </script>
 
-<div class="p-6 max-w-3xl mx-auto">
-	<h1 class="text-2xl font-bold mb-4 text-gray-800">Edit Post</h1>
+<div class="mx-auto w-full p-4">
+	<div class="w-full flex justify-between">
+		<h1 class="mb-4 text-2xl font-bold">Edit Artikel</h1>
+
+		<a href="/admin/artikel" class="mb-4 inline-block text-sm text-black hover:text-red-500"
+			><i class="fas fa-arrow-left px-1"></i>Kembali ke Daftar Artikel</a
+		>
+	</div>
 
 	{#if loading}
-		<p>Loading...</p>
+		<p>Memuat artikel...</p>
+	{:else if error}
+		<p class="text-red-600">{error}</p>
 	{:else}
-		<div class="space-y-4">
-			{#if error}
-				<p class="text-red-600">{error}</p>
-			{/if}
-			{#if success}
-				<p class="text-green-600">{success}</p>
-			{/if}
-
-			<input
-				type="text"
-				bind:value={title}
-				class="w-full p-2 border rounded"
-				placeholder="Judul post"
-			/>
-
-			<textarea
-				bind:value={content}
-				class="w-full p-3 border rounded min-h-[200px]"
-				placeholder="Konten post (HTML)"
-			></textarea>
-
-			<button
-				on:click={savePost}
-				class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-				disabled={saving}
-			>
-				{saving ? 'Menyimpan...' : 'Simpan'}
-			</button>
-		</div>
+		<TiptapEditor bind:content onUpdate={(html) => (content = html)} />
 	{/if}
 </div>

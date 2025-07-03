@@ -10,17 +10,19 @@
 </script>
 
 <!-- Layout Sidebar dan Topbar -->
-<div class="flex flex-col w-full h-screen overflow-hidden">
-	<!-- Topbar -->
-	 <Topbar title="Dashboard" />
-	<!-- Konten utama -->
-	<div class="flex h-full bg-gray-100">
-		<!-- Sidebar -->
-		<Sidebar />
+<div class="flex flex-col h-screen overflow-hidden">
+  <!-- Topbar -->
+  <Topbar title="Dashboard" />
 
-		<!-- Halaman aktif -->
-		<main class="flex-1 overflow-y-auto p-6">
-			<slot />
-		</main>
-	</div>
+  <div class="flex flex-1 overflow-hidden bg-gray-100">
+    <!-- Sidebar -->
+    <Sidebar />
+
+    <!-- Konten utama yang bisa scroll -->
+    <main class="flex-1 overflow-y-auto px-[5px] py-3 lg:p-6">
+      <slot />
+    </main>
+  </div>
 </div>
+
+

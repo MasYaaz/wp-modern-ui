@@ -12,6 +12,7 @@
 	import { scale } from 'svelte/transition';
 	import { sidebarCollapsed, sidebarOpen } from '$lib/stores/sidebar';
 	import { ChevronLeft, ChevronRight, Menu } from 'lucide-svelte';
+	import { resetAllStores } from '$lib/stores/logout';
 
 	let avatarButton: HTMLElement;
 	let showMenu = false;
@@ -51,20 +52,21 @@
 
 	function logout() {
 		localStorage.removeItem('token');
+		resetAllStores; // menghapus semua cache user
 		goto('/login');
 	}
 </script>
 
-<header class="flex items-center bg-white pr-3 md:pr-6 shadow">
+<header class="flex items-center bg-white pr-3 shadow md:pr-6">
 	<!-- Logo -->
 	<div
-		class={`hidden md:flex w-fit justify-center gap-2 ${$sidebarCollapsed ? 'px-[13px] py-2' : 'px-12 py-2'}`}
+		class={`hidden w-fit justify-center gap-2 md:flex ${$sidebarCollapsed ? 'px-[13px] py-2' : 'px-12 py-2'}`}
 	>
 		{#if !$sidebarCollapsed}
-			<img src="../logo-p-light.svg" class="w-44" alt="logo besar" />
+			<img src="/logo-p-light.svg" class="w-44" alt="logo besar" />
 		{/if}
 		{#if $sidebarCollapsed}
-			<img src="../logo-light.svg" class="w-10" alt="logo kecil" />
+			<img src="/logo-light.svg" class="w-10" alt="logo kecil" />
 		{/if}
 	</div>
 	<div class="flex w-full items-center justify-between">

@@ -29,13 +29,16 @@ export async function updateProfile(data: any) {
 	});
 }
 
-
 // Menghitung jumlah user
 export async function getUsers() {
 	return await apiFetch('/wp/v2/users');
 }
 
-// 📄 Posts
+// 📄 untuk artikel
+export async function getPost(id: number) {
+	return await apiFetch(`/wp/v2/posts/${id}`);
+}
+
 export async function getPosts() {
 	return await apiFetch('/wp/v2/posts?_embed');
 }
