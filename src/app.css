@@ -27,3 +27,8 @@ ul[data-type="taskList"] input[type="checkbox"] {
 	transform: translateY(1px); /* Fine-tune agar sejajar */
 }
 
+.resize-handle {
+  user-select: none;
+}
+
+

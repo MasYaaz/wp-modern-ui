@@ -5,7 +5,7 @@
 	export let types: { type: string; icon: string; label: string }[] = [
 		{ type: 'bulletList', icon: 'fa-list-ul', label: 'Bullet List' },
 		{ type: 'orderedList', icon: 'fa-list-ol', label: 'Ordered List' },
-		{ type: 'listItem', icon: 'fa-square-check', label: 'Task List' }
+		{ type: 'taskList', icon: 'fa-square-check', label: 'Task List' }
 	];
 
 	let open = false;
@@ -32,7 +32,7 @@
 			chain.toggleBulletList().run();
 		} else if (type === 'orderedList') {
 			chain.toggleOrderedList().run();
-		} else if (type === 'listItem') {
+		} else if (type === 'taskList') {
 			chain.toggleTaskList().run();
 		}
 
@@ -67,14 +67,14 @@
 <div class="relative inline-block" bind:this={dropdownRef}>
 	<button
 		on:click={toggleDropdown}
-		class="flex w-fit items-center gap-1 px-2 py-1 text-sm font-medium hover:cursor-pointer hover:bg-gray-100 hover:text-blue-500"
+		class="flex w-fit items-center py-1 text-sm font-medium hover:cursor-pointer hover:text-blue-500"
 	>
 		<!-- Gunakan ikon bullet list sebagai default -->
 		<i
 			class="fa-solid fa-list-ul text-sm"
 			class:fa-list-ul={activeType === 'bulletList' || !activeType}
 			class:fa-list-ol={activeType === 'orderedList'}
-			class:fa-square-check={activeType === 'listItem'}
+			class:fa-square-check={activeType === 'taskList'}
 		></i>
 
 		<!-- Panah dropdown -->
@@ -85,12 +85,12 @@
 
 	{#if open}
 		<div
-			class="absolute z-10 mt-1 flex w-fit flex-col items-center rounded-xl border-gray-300 bg-white shadow"
+			class="absolute z-10 mt-1 flex w-fit flex-col items-center overflow-hidden rounded-xl border-gray-300 bg-white shadow"
 		>
 			{#each types as t}
 				<button
 					on:click={() => selectList(t.type)}
-					class="flex w-30 items-center px-3 py-1 text-left font-medium hover:bg-gray-100"
+					class="flex w-26 items-center px-2 py-1 text-left font-medium hover:bg-gray-100"
 					class:bg-blue-100={editor?.isActive(t.type)}
 				>
 					<i class={`fa-solid ${t.icon} text-base`}></i>

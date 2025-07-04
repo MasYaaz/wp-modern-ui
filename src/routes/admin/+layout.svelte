@@ -3,6 +3,7 @@
 	import { protectRoute } from '$lib/auth';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import Topbar from '$lib/components/Topbar.svelte';
+  import { SvelteToast } from '@zerodevx/svelte-toast';
 
 	onMount(() => {
 		protectRoute();
@@ -20,6 +21,7 @@
 
     <!-- Konten utama yang bisa scroll -->
     <main class="flex-1 overflow-y-auto px-[5px] py-3 lg:p-6">
+      <SvelteToast/>
       <slot />
     </main>
   </div>

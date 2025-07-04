@@ -10,9 +10,7 @@
 
 	function updateActiveLevel() {
 		if (editor) {
-			activeLevel = levels.find((level) =>
-				editor.isActive('heading', { level })
-			) ?? null;
+			activeLevel = levels.find((level) => editor.isActive('heading', { level })) ?? null;
 		}
 	}
 
@@ -61,14 +59,14 @@
 	<!-- Trigger Button -->
 	<button
 		on:click={toggleDropdown}
-		class="flex items-center hover:cursor-pointer hover:text-blue-500 gap-1 px-2 py-1 text-sm font-medium hover:bg-gray-100"
+		class="flex items-center py-1 text-sm font-medium hover:cursor-pointer hover:text-blue-500"
 	>
 		<!-- Font Awesome Heading Icon -->
 		<i class="fa-solid fa-heading text-sm"></i>
 
 		<!-- Active Heading Level -->
 		{#if activeLevel}
-			<span class="text-xs -mb-[1px] -ml-[3px]">{activeLevel}</span>
+			<span class="-mb-[2px] ml-[1px] text-[10px]">{activeLevel}</span>
 		{/if}
 
 		<!-- Dropdown Arrow -->
@@ -79,7 +77,9 @@
 
 	<!-- Dropdown List -->
 	{#if open}
-		<div class="absolute z-10 mt-1 w-fit rounded-xl border-gray-300 bg-white shadow">
+		<div
+			class="absolute left-1/2 z-10 mt-1 flex overflow-hidden -translate-x-1/2 flex-col items-center rounded-lg bg-white shadow"
+		>
 			{#each levels as level}
 				<button
 					on:click={() => selectHeading(level)}
@@ -87,7 +87,7 @@
 					class:bg-blue-100={editor?.isActive('heading', { level })}
 				>
 					<i class="fa-solid fa-heading"></i>
-					<span class="text-xs mt-[2px] ml-[1px]">{level}</span>
+					<span class="-mb-[2px] ml-[1px] text-[10px]">{level}</span>
 				</button>
 			{/each}
 		</div>

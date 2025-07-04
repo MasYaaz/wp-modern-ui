@@ -43,6 +43,19 @@ export async function getPosts() {
 	return await apiFetch('/wp/v2/posts?_embed');
 }
 
+/**
+ * 🔄 Update post WordPress
+ * @param id ID post yang ingin diperbarui
+ * @param data Objek data (title, content, status, dsb)
+ * @returns Post yang sudah diperbarui
+ */
+export async function updatePost(id: number, data: any) {
+	return await apiFetch(`/wp/v2/posts/${id}`, {
+		method: 'PUT',
+		body: JSON.stringify(data)
+	});
+}
+
 // Komentar
 export async function getComments() {
 	return await apiFetch('/wp/v2/comments');
@@ -51,13 +64,6 @@ export async function getComments() {
 export async function createPost(data: any) {
 	return await apiFetch('/wp/v2/posts', {
 		method: 'POST',
-		body: JSON.stringify(data)
-	});
-}
-
-export async function updatePost(id: number, data: any) {
-	return await apiFetch(`/wp/v2/posts/${id}`, {
-		method: 'PUT',
 		body: JSON.stringify(data)
 	});
 }
