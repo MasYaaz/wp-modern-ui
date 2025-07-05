@@ -6,6 +6,7 @@
 	import { uploadMedia } from '$lib/api/wordpress';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { convertGutenbergImagesToResizable } from '$lib/utils/Converter';
+	import { getMediaList } from '$lib/api/wordpress';
 
 	let title = '';
 	let content = '';
@@ -40,12 +41,13 @@
 		error = '';
 
 		try {
+			const post = await loadPost(id); // Ambil post yang lama
 			await updatePostCache(id, {
 				title,
 				content,
-				featured_media: featuredImageId
+				featured_media: featuredImageId,
+				author: post.author // Kirim ulang author lama
 			});
-
 			toast.push('✅ Artikel berhasil disimpan!', {
 				theme: {
 					'--toastBackground': '#16a34a',
@@ -77,6 +79,26 @@
 			return ''; // ✅ tetap return string kosong jika gagal
 		}
 	}
+
+	async function handleSetFeaturedImage(event: CustomEvent) {
+	const src = event.detail?.src;
+	if (!src) return;
+
+	featuredImage = src;
+
+	// 🔍 Cari ID dari URL
+	const mediaList = await getMediaList();
+	const found = mediaList.find((item: any) => item.source_url === src);
+	featuredImageId = found?.id ?? null;
+
+	toast.push('✅ Gambar ini diset sebagai Featured Image!', {
+		theme: {
+			'--toastBackground': '#2563eb',
+			'--toastColor': 'white',
+			'--toastBarBackground': 'white'
+		}
+	});
+}
 </script>
 
 <div class="mx-auto h-full w-full p-4 pt-0">
@@ -97,7 +119,7 @@
 			onUpdate={(html) => (content = html)}
 			{title}
 			onTitleChange={(val) => (title = val)}
-			onInsertFeaturedImage={handleImageUpload}
+			onInsertImage={handleImageUpload}
 			onSave={save}
 		/>
 	{/if}

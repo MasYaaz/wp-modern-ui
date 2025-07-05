@@ -31,4 +31,13 @@ ul[data-type="taskList"] input[type="checkbox"] {
   user-select: none;
 }
 
+[data-drag-handle] {
+  cursor: grab;
+}
+.ProseMirror .drag-handle {
+  display: inline-block;
+  cursor: grab;
+}
+
+
 

@@ -36,7 +36,7 @@ export async function getUsers() {
 
 // 📄 untuk artikel
 export async function getPost(id: number) {
-	return await apiFetch(`/wp/v2/posts/${id}`);
+	return await apiFetch(`/wp/v2/posts/${id}?_embed&nocache=${Date.now()}`);
 }
 
 export async function getPosts() {
@@ -50,7 +50,7 @@ export async function getPosts() {
  * @returns Post yang sudah diperbarui
  */
 export async function updatePost(id: number, data: any) {
-	return await apiFetch(`/wp/v2/posts/${id}`, {
+	return await apiFetch(`/wp/v2/posts/${id}?_embed`, {
 		method: 'PUT',
 		body: JSON.stringify(data)
 	});
@@ -84,4 +84,9 @@ export async function uploadMedia(file: File) {
 		body: formData,
 		isFormData: true
 	});
+}
+
+// 📁 Ambil daftar media (gambar)
+export async function getMediaList() {
+	return await apiFetch('/wp/v2/media?per_page=100&_fields=id,source_url');
 }

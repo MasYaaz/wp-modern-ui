@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { sidebarCollapsed, sidebarOpen } from '$lib/stores/sidebar';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { faNewspaper, faMessage } from '@fortawesome/free-solid-svg-icons';
+	import { LayoutDashboardIcon } from 'lucide-svelte';
 
 	const menuItems = [
-		{ iconType: 'material', icon: 'dashboard', label: 'Dashboard', href: '/admin' },
-		{ iconType: 'fa', icon: 'fa-solid fa-newspaper', label: 'Artikel', href: '/admin/artikel' },
-		{ iconType: 'fa', icon: 'fa-solid fa-message', label: 'Komentar', href: '/admin/komentar' }
-	];
+		{ iconType: 'lucide', icon: LayoutDashboardIcon, label: 'Dashboard', href: '/admin' },
+		{ iconType: 'fa', icon: faNewspaper, label: 'Artikel', href: '/admin/artikel' },
+		{ iconType: 'fa', icon: faMessage, label: 'Komentar', href: '/admin/komentar' }
+	] as const;
 </script>
 
 <!-- Overlay untuk mobile -->
@@ -47,9 +50,9 @@
 				class="sidebar-item flex items-center gap-3 px-4 py-2 text-sm font-bold transition hover:bg-blue-50 hover:text-blue-600"
 			>
 				{#if item.iconType === 'fa'}
-					<i class={`${item.icon} w-7 p-1 text-center text-[20px]`}></i>
-				{:else if item.iconType === 'material'}
-					<span class="material-symbols-outlined w-7 p-[1.5px]">{item.icon}</span>
+					<FontAwesomeIcon icon={item.icon as import('@fortawesome/fontawesome-svg-core').IconDefinition} class="w-6 text-base"/>
+				{:else if item.iconType === 'lucide'}
+					<item.icon class="w-6" size="18" strokeWidth="2.3"/>
 				{/if}
 
 				{#if !$sidebarCollapsed || $sidebarOpen}

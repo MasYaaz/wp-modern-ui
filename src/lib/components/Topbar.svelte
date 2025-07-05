@@ -11,9 +11,9 @@
 	import { clickOutside } from '$lib/actions/clickOutside';
 	import { scale } from 'svelte/transition';
 	import { sidebarCollapsed, sidebarOpen } from '$lib/stores/sidebar';
-	import { ChevronLeft, ChevronRight, Menu } from 'lucide-svelte';
 	import { resetAllStores } from '$lib/stores/logout';
-
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { faUser, faCog, faBars, faChevronRight, faChevronLeft, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
 	let avatarButton: HTMLElement;
 	let showMenu = false;
 
@@ -69,7 +69,7 @@
 			<img src="/logo-light.svg" class="w-10" alt="logo kecil" />
 		{/if}
 	</div>
-	<div class="flex w-full items-center justify-between">
+	<div class="flex px-2 md:px-0 w-full items-center justify-between">
 		<!-- Tombol hanya muncul di mobile -->
 		<button
 			on:click={toggleSidebar}
@@ -77,15 +77,15 @@
 		>
 			<!-- Mobile (md:hidden): icon menu -->
 			<span class="block md:hidden">
-				<Menu class="h-8 w-8 p-1" />
+				<FontAwesomeIcon icon={faBars} class="text-base"/>
 			</span>
 
 			<!-- Desktop (md:inline): collapse icon -->
-			<span class="hidden md:inline">
+			<span class="mx-2 hidden text-sm md:inline">
 				{#if $sidebarCollapsed}
-					<ChevronRight class="h-5 w-5" />
+					<FontAwesomeIcon icon={faChevronRight} class="text-base"/>
 				{:else}
-					<ChevronLeft class="h-5 w-5" />
+					<FontAwesomeIcon icon={faChevronLeft} class="text-base"/>
 				{/if}
 			</span>
 		</button>
@@ -98,7 +98,7 @@
 				class="flex items-center gap-2 transition-transform duration-300 hover:scale-110 hover:cursor-pointer focus:outline-none"
 			>
 				{#if user.avatarUrl}
-					<img src={user.avatarUrl} alt="User avatar" class="h-10 w-10 object-cover" />
+					<img src={user.avatarUrl} alt="User avatar" class="h-10 w-10 md:w-15 md:h-15 p-1 object-cover" />
 				{:else}
 					<div
 						class="flex h-10 w-10 items-center justify-center rounded-full font-semibold text-black"
@@ -127,17 +127,17 @@
 							<h3 class="text-[12px] font-medium text-gray-700 md:inline">{user.email}</h3>
 						</div>
 						<div class="mt-2 mb-1 w-[90%] border-[0.1px] border-t border-gray-500"></div>
-						<div class="flex w-full flex-col px-4 py-1">
+						<div class="flex w-full flex-col px-3 py-1">
 							<a
 								href="/admin/profile"
 								class="block py-1 text-left text-sm font-medium hover:bg-gray-100 hover:font-bold"
-								><i class="fas fa-user w-6 text-sm"></i>Profil</a
+								><FontAwesomeIcon icon={faUser} class="w-6"/>Profil</a
 							>
 							<button
 								on:click={logout}
 								class="w-full py-1 text-left text-sm font-medium text-red-600 hover:cursor-pointer hover:bg-gray-100 hover:font-bold"
 							>
-								<i class="fas fa-door-open w-6 text-sm"></i>Logout
+								<FontAwesomeIcon icon={faDoorOpen} class="w-6"/>Logout
 							</button>
 						</div>
 					</div>

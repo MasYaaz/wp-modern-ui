@@ -71,7 +71,34 @@ export const ResizableImage = Node.create({
 				outer.appendChild(badge);
 			}
 
-			// ✋ Disable resize kalau embedded
+			// ✅ Tambahkan tombol "Set as Featured"
+			const btn = document.createElement('button');
+			btn.textContent = 'Set Featured';
+			btn.style.position = 'absolute';
+			btn.style.top = '0';
+			btn.style.right = '0';
+			btn.style.background = '#2563eb';
+			btn.style.color = 'white';
+			btn.style.padding = '2px 6px';
+			btn.style.fontSize = '10px';
+			btn.style.border = 'none';
+			btn.style.cursor = 'pointer';
+			btn.style.zIndex = '20';
+			btn.style.borderRadius = '0 0 0 4px';
+
+			btn.onclick = () => {
+				console.log('[✔️] Button clicked. Dispatching set-featured-image event...');
+				console.log('📤 Event detail:', node.attrs.src);
+
+				const customEvent = new CustomEvent('set-featured-image', {
+					detail: { src: node.attrs.src },
+					bubbles: true
+				});
+				outer.dispatchEvent(customEvent);
+			};
+			outer.appendChild(btn);
+
+			// ✋ Handle resize kalau bukan embed
 			if (!node.attrs.embedded) {
 				const handle = document.createElement('span');
 				handle.style.position = 'absolute';

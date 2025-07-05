@@ -1,12 +1,16 @@
 <script lang="ts">
+	import { faChevronDown, faListOl, faListUl, faSquareCheck } from '@fortawesome/free-solid-svg-icons';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onMount, onDestroy } from 'svelte';
 
 	export let editor: any;
-	export let types: { type: string; icon: string; label: string }[] = [
-		{ type: 'bulletList', icon: 'fa-list-ul', label: 'Bullet List' },
-		{ type: 'orderedList', icon: 'fa-list-ol', label: 'Ordered List' },
-		{ type: 'taskList', icon: 'fa-square-check', label: 'Task List' }
-	];
+	import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+	
+	export let types: { type: string; icon: IconDefinition; label: string }[] = [
+			{ type: 'bulletList', icon: faListUl, label: 'Bullet List' },
+			{ type: 'orderedList', icon: faListOl, label: 'Ordered List' },
+			{ type: 'taskList', icon: faSquareCheck, label: 'Task List' }
+		];
 
 	let open = false;
 	let dropdownRef: HTMLElement;
@@ -70,17 +74,18 @@
 		class="flex w-fit items-center py-1 text-sm font-medium hover:cursor-pointer hover:text-blue-500"
 	>
 		<!-- Gunakan ikon bullet list sebagai default -->
-		<i
-			class="fa-solid fa-list-ul text-sm"
-			class:fa-list-ul={activeType === 'bulletList' || !activeType}
-			class:fa-list-ol={activeType === 'orderedList'}
-			class:fa-square-check={activeType === 'taskList'}
-		></i>
+		<FontAwesomeIcon
+			icon={
+				activeType === 'orderedList'
+					? faListOl
+					: activeType === 'taskList'
+					? faSquareCheck
+					: faListUl
+			}
+		/>
 
 		<!-- Panah dropdown -->
-		<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-			<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-		</svg>
+		<FontAwesomeIcon icon={faChevronDown} class="text-[10px] p-[2px] py-1"/>
 	</button>
 
 	{#if open}
@@ -93,7 +98,7 @@
 					class="flex w-26 items-center px-2 py-1 text-left font-medium hover:bg-gray-100"
 					class:bg-blue-100={editor?.isActive(t.type)}
 				>
-					<i class={`fa-solid ${t.icon} text-base`}></i>
+					<FontAwesomeIcon icon={t.icon}/>
 					<span class="ml-1 text-xs">{t.label}</span>
 				</button>
 			{/each}

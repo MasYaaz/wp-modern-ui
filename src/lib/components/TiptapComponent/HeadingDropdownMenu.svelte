@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { icon } from '@fortawesome/fontawesome-svg-core';
+	import { faChevronDown, faHeading } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+import { onMount, onDestroy } from 'svelte';
 
 	export let editor: any;
 	export let levels: number[] = [1, 2, 3, 4, 5, 6];
@@ -62,7 +65,7 @@
 		class="flex items-center py-1 text-sm font-medium hover:cursor-pointer hover:text-blue-500"
 	>
 		<!-- Font Awesome Heading Icon -->
-		<i class="fa-solid fa-heading text-sm"></i>
+		<FontAwesomeIcon icon={faHeading}/>
 
 		<!-- Active Heading Level -->
 		{#if activeLevel}
@@ -70,9 +73,7 @@
 		{/if}
 
 		<!-- Dropdown Arrow -->
-		<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-			<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-		</svg>
+		<FontAwesomeIcon icon={faChevronDown} class="text-[10px] p-[2px] py-1"/>
 	</button>
 
 	<!-- Dropdown List -->
@@ -86,7 +87,7 @@
 					class="flex w-full items-center px-3 py-1 text-left font-medium hover:bg-gray-100"
 					class:bg-blue-100={editor?.isActive('heading', { level })}
 				>
-					<i class="fa-solid fa-heading"></i>
+					<FontAwesomeIcon icon={faHeading}/>
 					<span class="-mb-[2px] ml-[1px] text-[10px]">{level}</span>
 				</button>
 			{/each}
