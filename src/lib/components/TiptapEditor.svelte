@@ -9,34 +9,37 @@
 	import TaskItem from '@tiptap/extension-task-item';
 	import TextAlign from '@tiptap/extension-text-align';
 	import Highlight from '@tiptap/extension-highlight';
-	import HeadingDropdownMenu from './TiptapComponent/HeadingDropdownMenu.svelte';
-	import ListDropdown from './TiptapComponent/ListDropdown.svelte';
+	import HeadingDropdownMenu from './tiptap-ui/HeadingDropdownMenu.svelte';
+	import ListDropdown from './tiptap-ui/ListDropdownMenu.svelte';
 	import { ResizableImage } from './TiptapComponent/ResizeImage';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { Undo2, Redo2, Bold, Italic, UnderlineIcon } from 'lucide-svelte';
-	import {
-		faAlignCenter,
-		faAlignJustify,
-		faAlignLeft,
-		faAlignRight,
-		faCode,
-		faFloppyDisk,
-		faImage,
-		faImages,
-		faQuoteRight
-	} from '@fortawesome/free-solid-svg-icons';
-	import { ImageBlockNode } from './TiptapComponent/ImageBlock';
 	import DragHandle from '@tiptap/extension-drag-handle';
-	import { TextBlockNode } from './TiptapComponent/TextBlock';
-	import { convertHTMLToBlockContent } from './TiptapComponent/convertHTMLtoBlockContent';
+	import UndoRedoButton from './tiptap-ui/UndoRedoButton.svelte';
+	import MarkButton from './tiptap-ui/MarkButton.svelte';
+	import BlockquoteButton from './tiptap-ui/BlockquoteButton.svelte';
+	import CodeBlockButton from './tiptap-ui/CodeBlockButton.svelte';
+	import ImageInsertButton from './tiptap-ui/ImageInsertButton.svelte';
+	import FeaturedImageButton from './tiptap-ui/FeaturedImageButton.svelte';
+	import SaveButton from './tiptap-ui/SaveButton.svelte';
+	import TextAlignButton from './tiptap-ui/TextAlignButton.svelte';
+	import ColorHighlightPopover from './tiptap-ui/ColorHighlightPopover.svelte';
+	import Superscript from '@tiptap/extension-superscript';
+	import Subscript from '@tiptap/extension-subscript';
+	import { editor as editorStore } from '$lib/stores/editor';
+	import SuperscriptButton from './tiptap-ui/SuperscriptButton.svelte';
+	import SubscriptButton from './tiptap-ui/SubscriptButton.svelte';
+	import { CustomDocument } from '$lib/utils/customDocument';
+	import { ImageUpload } from './tiptap-node/ImageUpload';
+	import { setContext } from 'svelte';
 
 	export let content = '';
 	export let onUpdate: (html: string) => void;
 	export let title: string = '';
 	export let onTitleChange: (value: string) => void = () => {};
 	export let onSave: () => void = () => {};
+
 	export let onInsertImage: (file: File) => Promise<string> = async () => '';
+	setContext('onInsertImage', onInsertImage);
 
 	let editor: Editor;
 	let editorElement: HTMLElement;
@@ -53,7 +56,9 @@
 		editor = new Editor({
 			element: editorElement,
 			extensions: [
+				CustomDocument,
 				StarterKit.configure({
+					document: false,
 					bulletList: {},
 					orderedList: {},
 					listItem: {}
@@ -62,14 +67,17 @@
 					types: ['heading', 'paragraph'] // elemen yang bisa diatur align-nya
 				}),
 				TaskList,
-				Highlight,
+				Highlight.configure({
+					multicolor: true
+				}),
 				TaskItem.configure({ nested: true }),
 				Underline,
 				Link.configure({ openOnClick: false }),
 				ResizableImage,
+				ImageUpload,
 				DragHandle,
-				TextBlockNode,
-				ImageBlockNode,
+				Superscript,
+				Subscript,
 				Image.configure({
 					inline: false,
 					HTMLAttributes: {
@@ -88,16 +96,12 @@
 				onUpdate?.(editor.getHTML());
 			}
 		});
+		editorStore.set(editor);
 	});
 
 	onDestroy(() => {
 		editor?.destroy();
 	});
-
-	function action(cmd: () => void) {
-		editor?.chain().focus();
-		cmd();
-	}
 
 	function insertImage() {
 		const input = document.createElement('input');
@@ -145,140 +149,50 @@
 			}
 		});
 	}
-
-	function insertImageBlock() {
-		editor
-			?.chain()
-			.focus()
-			.insertContent({
-				type: 'imageBlock',
-				attrs: {
-					src: 'https://source.unsplash.com/random/800x400',
-					alt: 'Contoh gambar'
-				}
-			})
-			.run();
-	}
-
-	function insertTextBlock() {
-		editor
-			?.chain()
-			.focus()
-			.insertContent({
-				type: 'textBlock',
-				attrs: { background: '#fef3c7' }
-			})
-			.run();
-	}
 </script>
 
 <div class="relative flex h-[80vh] w-full flex-col overflow-hidden rounded-2xl">
 	<!-- Wrapper dengan padding seperti editor -->
-	<div class="top-0 z-10 w-full bg-gray-300 px-5">
-		<div class="flex flex-wrap justify-center gap-6 rounded-t-xl bg-gray-300 p-2 text-sm">
+	<div class="top-0 z-10 flex w-full items-center justify-center bg-gray-300 px-5">
+		<div class="flex flex-wrap items-center gap-3 rounded-t-xl bg-gray-300 p-2 text-sm">
 			<div class="flex gap-2">
-				<button
-					on:click={() => editor.chain().focus().undo().run()}
-					class="rounded py-1 text-sm font-medium hover:cursor-pointer hover:text-blue-500"
-					aria-label="undo"><Undo2 size="17" /></button
-				>
-				<button
-					on:click={() => editor.chain().focus().redo().run()}
-					class="rounded py-1 text-sm font-medium hover:cursor-pointer hover:text-blue-500"
-					aria-label="redo"><Redo2 size="17" /></button
-				>
+				<UndoRedoButton action="undo" />
+				<UndoRedoButton action="redo" />
 			</div>
+			<div class="mx-2 h-6 w-[1.2px] bg-gray-500"></div>
 			<div class="flex gap-2">
-				<button
-					on:click={() => editor.chain().focus().toggleBold().run()}
-					aria-label="Bold"
-					class="rounded hover:cursor-pointer hover:text-blue-500"
-					><Bold size="17" strokeWidth="2.3" /></button
-				>
-				<button
-					on:click={() => editor.chain().focus().toggleItalic().run()}
-					aria-label="Italic"
-					class="rounded hover:cursor-pointer hover:text-blue-500"
-					><Italic size="17" strokeWidth="2.3" /></button
-				>
-				<button
-					on:click={() => editor.chain().focus().toggleUnderline().run()}
-					aria-label="underline"
-					class="rounded hover:cursor-pointer hover:text-blue-500"
-					><UnderlineIcon size="17" strokeWidth="2.3" /></button
-				>
+				<MarkButton type="bold" />
+				<MarkButton type="strike" />
+				<MarkButton type="italic" />
+				<MarkButton type="underline" />
 			</div>
+			<div class="mx-2 h-6 w-[1.2px] bg-gray-500"></div>
 			<div class="flex gap-2">
-				<HeadingDropdownMenu {editor} />
-				<ListDropdown {editor} />
+				<HeadingDropdownMenu />
+				<ListDropdown />
 			</div>
+			<div class="mx-2 h-6 w-[1.2px] bg-gray-500"></div>
 			<div class="flex gap-3">
-				<button
-					on:click={() => editor.chain().focus().toggleBlockquote().run()}
-					class="text-sm font-medium hover:cursor-pointer hover:text-blue-500"
-					aria-label="Quotes"><FontAwesomeIcon icon={faQuoteRight} /></button
-				>
-				<button
-					on:click={() => editor.chain().focus().toggleCodeBlock().run()}
-					class="text-sm font-medium hover:cursor-pointer hover:text-blue-500"
-					aria-label="Code Box"><FontAwesomeIcon icon={faCode} /></button
-				>
+				<BlockquoteButton />
+				<CodeBlockButton />
+				<ColorHighlightPopover />
 			</div>
+			<div class="mx-2 h-6 w-[1.2px] bg-gray-500"></div>
 			<div class="flex gap-2">
-				<button
-					on:click={() => editor.chain().focus().setTextAlign('left').run()}
-					class="rounded hover:cursor-pointer hover:text-blue-500"
-					aria-label="Align Left"
-				>
-					<FontAwesomeIcon icon={faAlignLeft} />
-				</button>
-
-				<button
-					on:click={() => editor.chain().focus().setTextAlign('center').run()}
-					class="rounded hover:cursor-pointer hover:text-blue-500"
-					aria-label="Align Center"
-				>
-					<FontAwesomeIcon icon={faAlignCenter} />
-				</button>
-
-				<button
-					on:click={() => editor.chain().focus().setTextAlign('right').run()}
-					class="rounded hover:cursor-pointer hover:text-blue-500"
-					aria-label="Align Right"
-				>
-					<FontAwesomeIcon icon={faAlignRight} />
-				</button>
-
-				<button
-					on:click={() => editor.chain().focus().setTextAlign('justify').run()}
-					class="rounded hover:cursor-pointer hover:text-blue-500"
-					aria-label="Align Justify"
-				>
-					<FontAwesomeIcon icon={faAlignJustify} />
-				</button>
+				<TextAlignButton align="left" />
+				<TextAlignButton align="center" />
+				<TextAlignButton align="right" />
+				<TextAlignButton align="justify" />
 			</div>
-			<!-- Tombol Insert Image -->
-			<button
-				on:click={insertImage}
-				class="rounded hover:cursor-pointer hover:text-blue-500"
-				aria-label="Insert Image"
-			>
-				<FontAwesomeIcon icon={faImage} class="text-base" />
-			</button>
-			<button
-				type="button"
-				class="rounded text-sm text-black hover:cursor-pointer hover:text-blue-600"
-				aria-label="Featured Image"
-			>
-				<FontAwesomeIcon icon={faImages} class="text-base" />
-			</button>
-			<button
-				on:click={onSave}
-				class="rounded hover:cursor-pointer hover:text-blue-500"
-				aria-label="Save"
-			>
-				<FontAwesomeIcon icon={faFloppyDisk} class="text-base" />
-			</button>
+			<div class="mx-2 h-6 w-[1.2px] bg-gray-500"></div>
+			<div class="flex gap-2">
+				<SuperscriptButton />
+				<SubscriptButton />
+			</div>
+			<div class="mx-2 h-6 w-[1.2px] bg-gray-500"></div>
+			<ImageInsertButton />
+			<FeaturedImageButton />
+			<SaveButton {onSave} />
 		</div>
 	</div>
 	<div
@@ -293,19 +207,5 @@
 			class="mb-3 w-full border-b border-gray-300 px-4 py-2 text-2xl leading-tight font-bold focus:outline-none md:text-3xl lg:text-4xl"
 			spellcheck="false"
 		/>
-		<button
-			on:click={insertImageBlock}
-			class="rounded hover:cursor-pointer hover:text-blue-500"
-			aria-label="Insert Image Block"
-		>
-			📷 Block
-		</button>
-		<button
-			on:click={insertTextBlock}
-			class="rounded hover:cursor-pointer hover:text-blue-500"
-			aria-label="Insert Image Block"
-		>
-			📷 Block
-		</button>
 	</div>
 </div>

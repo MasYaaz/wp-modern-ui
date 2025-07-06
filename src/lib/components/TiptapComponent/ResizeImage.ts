@@ -49,6 +49,7 @@ export const ResizableImage = Node.create({
 			img.title = node.attrs.title || '';
 			img.style.width = node.attrs.width || 'auto';
 			img.style.height = node.attrs.height || 'auto';
+			img.style.margin = '0';
 			img.style.borderRadius = '4px';
 			img.style.maxWidth = '100%';
 			img.style.display = 'block';
@@ -74,6 +75,7 @@ export const ResizableImage = Node.create({
 			// ✅ Tambahkan tombol "Set as Featured"
 			const btn = document.createElement('button');
 			btn.textContent = 'Set Featured';
+			btn.classList.add('set-featured-button'); // <<< TAMBAHKAN KELAS INI
 			btn.style.position = 'absolute';
 			btn.style.top = '0';
 			btn.style.right = '0';
@@ -87,9 +89,6 @@ export const ResizableImage = Node.create({
 			btn.style.borderRadius = '0 0 0 4px';
 
 			btn.onclick = () => {
-				console.log('[✔️] Button clicked. Dispatching set-featured-image event...');
-				console.log('📤 Event detail:', node.attrs.src);
-
 				const customEvent = new CustomEvent('set-featured-image', {
 					detail: { src: node.attrs.src },
 					bubbles: true

@@ -79,26 +79,6 @@
 			return ''; // ✅ tetap return string kosong jika gagal
 		}
 	}
-
-	async function handleSetFeaturedImage(event: CustomEvent) {
-	const src = event.detail?.src;
-	if (!src) return;
-
-	featuredImage = src;
-
-	// 🔍 Cari ID dari URL
-	const mediaList = await getMediaList();
-	const found = mediaList.find((item: any) => item.source_url === src);
-	featuredImageId = found?.id ?? null;
-
-	toast.push('✅ Gambar ini diset sebagai Featured Image!', {
-		theme: {
-			'--toastBackground': '#2563eb',
-			'--toastColor': 'white',
-			'--toastBarBackground': 'white'
-		}
-	});
-}
 </script>
 
 <div class="mx-auto h-full w-full p-4 pt-0">

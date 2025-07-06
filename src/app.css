@@ -2,18 +2,18 @@
 @plugin '@tailwindcss/typography';
 
 /* TipTap TaskList checkbox styling */
-ul[data-type="taskList"] {
+ul[data-type='taskList'] {
 	list-style: none;
 	padding-left: 0;
 }
 
-ul[data-type="taskList"] li {
+ul[data-type='taskList'] li {
 	display: flex;
 	align-items: center;
 }
 
 /* Pastikan label dan teks di dalamnya center */
-ul[data-type="taskList"] li > label {
+ul[data-type='taskList'] li > label {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
@@ -21,23 +21,20 @@ ul[data-type="taskList"] li > label {
 }
 
 /* Checkbox styling */
-ul[data-type="taskList"] input[type="checkbox"] {
+ul[data-type='taskList'] input[type='checkbox'] {
 	accent-color: #3b82f6; /* Tailwind blue-500 */
 	margin: 0;
 	transform: translateY(1px); /* Fine-tune agar sejajar */
 }
 
 .resize-handle {
-  user-select: none;
+	user-select: none;
 }
 
 [data-drag-handle] {
-  cursor: grab;
+	cursor: grab;
 }
 .ProseMirror .drag-handle {
-  display: inline-block;
-  cursor: grab;
+	display: inline-block;
+	cursor: grab;
 }
-
-
-
