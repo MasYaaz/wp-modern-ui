@@ -2,8 +2,21 @@
 	import { posts, loadPosts } from '$lib/stores/posts';
 	import { onMount } from 'svelte';
 	import { protectRoute } from '$lib/auth';
+	import { deletePost } from '$lib/api/wordpress';
+	import { Pen, SquarePen, Trash2 } from 'lucide-svelte';
 
 	let error = '';
+
+	async function handleDelete(postid: number) {
+		if (!confirm('Yakin ingin menghapus gambar ini?')) return;
+		try {
+			await deletePost(postid);
+			posts.update((list) => list.filter((p) => p.id !== postid));
+		} catch (e) {
+			alert('Gagal menghapus media.');
+			console.error(e);
+		}
+	}
 
 	onMount(async () => {
 		protectRoute();
@@ -19,7 +32,7 @@
 	<div class="mb-6 flex items-center justify-between">
 		<h1 class="text-2xl font-bold text-gray-800">Daftar Artikel</h1>
 		<a
-			href="/admin/artikel/create"
+			href="/admin/artikel/new"
 			class="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
 		>
 			Tambah Artikel
@@ -58,9 +71,10 @@
 							{new Date(post.date).toLocaleDateString('id-ID')} ·
 							{post._embedded?.author?.[0]?.name ?? 'Anonim'}
 						</p>
-						<div class="pt-2 text-right">
-							<a href={`/admin/artikel/${post.id}`} class="text-sm text-blue-600 hover:underline">
-								Edit Artikel
+						<div class="w-full mt-5 flex justify-between items-center">
+							<button on:click|stopPropagation={() => handleDelete(post.id)} aria-label="penghapus" class="hover:text-red-600 hover:cursor-pointer"><Trash2 size="16"/></button>
+							<a href={`/admin/artikel/${post.id}`} class="text-sm text-blue-600 hover:text-green-700" aria-label="edit artikel">
+								<SquarePen size="16"/>
 							</a>
 						</div>
 					</div>

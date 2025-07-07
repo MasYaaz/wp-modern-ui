@@ -2,12 +2,13 @@
 	import { sidebarCollapsed, sidebarOpen } from '$lib/stores/sidebar';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faNewspaper, faMessage } from '@fortawesome/free-solid-svg-icons';
-	import { LayoutDashboardIcon } from 'lucide-svelte';
+	import { Images, LayoutDashboardIcon } from 'lucide-svelte';
 
 	const menuItems = [
 		{ iconType: 'lucide', icon: LayoutDashboardIcon, label: 'Dashboard', href: '/admin' },
 		{ iconType: 'fa', icon: faNewspaper, label: 'Artikel', href: '/admin/artikel' },
-		{ iconType: 'fa', icon: faMessage, label: 'Komentar', href: '/admin/komentar' }
+		{ iconType: 'fa', icon: faMessage, label: 'Komentar', href: '/admin/komentar' },
+		{ iconType: 'lucide', icon: Images, label: 'Pustaka Media', href: '/admin/media' }
 	] as const;
 </script>
 

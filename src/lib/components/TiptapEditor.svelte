@@ -11,7 +11,6 @@
 	import Highlight from '@tiptap/extension-highlight';
 	import HeadingDropdownMenu from './tiptap-ui/HeadingDropdownMenu.svelte';
 	import ListDropdown from './tiptap-ui/ListDropdownMenu.svelte';
-	import { ResizableImage } from './TiptapComponent/ResizeImage';
 	import { toast } from '@zerodevx/svelte-toast';
 	import DragHandle from '@tiptap/extension-drag-handle';
 	import UndoRedoButton from './tiptap-ui/UndoRedoButton.svelte';
@@ -19,7 +18,6 @@
 	import BlockquoteButton from './tiptap-ui/BlockquoteButton.svelte';
 	import CodeBlockButton from './tiptap-ui/CodeBlockButton.svelte';
 	import ImageInsertButton from './tiptap-ui/ImageInsertButton.svelte';
-	import FeaturedImageButton from './tiptap-ui/FeaturedImageButton.svelte';
 	import SaveButton from './tiptap-ui/SaveButton.svelte';
 	import TextAlignButton from './tiptap-ui/TextAlignButton.svelte';
 	import ColorHighlightPopover from './tiptap-ui/ColorHighlightPopover.svelte';
@@ -30,29 +28,29 @@
 	import SubscriptButton from './tiptap-ui/SubscriptButton.svelte';
 	import { CustomDocument } from '$lib/utils/customDocument';
 	import { ImageUpload } from './tiptap-node/ImageUpload';
-	import { setContext } from 'svelte';
+	import { getMediaList } from '$lib/api/wordpress';
+	import { onInsertImage as insertImageStore } from '$lib/stores/editor';
+	import { ResizableImage } from './TiptapComponent/ResizeImage';
 
-	export let content = '';
+	export let content: string = '';
 	export let onUpdate: (html: string) => void;
 	export let title: string = '';
 	export let onTitleChange: (value: string) => void = () => {};
 	export let onSave: () => void = () => {};
-
-	export let onInsertImage: (file: File) => Promise<string> = async () => '';
-	setContext('onInsertImage', onInsertImage);
+	export let onInsertImage: (file: File) => Promise<{ src: string; id: number }>
 
 	let editor: Editor;
 	let editorElement: HTMLElement;
 
-	let featuredImage = '';
-	let featuredImageId: number | null = null; // ID bisa tetap null kalau hanya pakai URL
+	export let featuredImage = '';
+	export let featuredImageId: number | null = null;
 
 	onMount(() => {
+		insertImageStore.set(onInsertImage);
 		editorElement?.addEventListener('set-featured-image', (event: Event) => {
 			const customEvent = event as CustomEvent;
 			handleSetFeaturedImage(customEvent);
 		});
-
 		editor = new Editor({
 			element: editorElement,
 			extensions: [
@@ -103,43 +101,23 @@
 		editor?.destroy();
 	});
 
-	function insertImage() {
-		const input = document.createElement('input');
-		input.type = 'file';
-		input.accept = 'image/*';
-
-		input.onchange = async () => {
-			const file = input.files?.[0];
-			if (!file) return;
-
-			// Upload gambar lewat callback dari luar
-			const src = await onInsertImage(file);
-			if (!src) return;
-
-			// Masukkan ke editor
-			editor
-				.chain()
-				.focus()
-				.insertContent({
-					type: 'resizableImage',
-					attrs: {
-						src,
-						width: '1000px',
-						height: 'auto'
-					}
-				})
-				.run();
-		};
-
-		input.click();
-	}
-
-	function handleSetFeaturedImage(event: CustomEvent) {
+	async function handleSetFeaturedImage(event: CustomEvent) {
 		const src = event.detail?.src;
 		if (!src) return;
 
 		featuredImage = src;
-		featuredImageId = null; // opsional: bisa diganti jika tahu ID-nya
+
+		// 🔍 Cari ID dari URL
+		const mediaList = await getMediaList();
+		const cleanSrc = src.split('?')[0]; // Hilangkan query string
+		const found = mediaList.find((item: any) => item.source_url === cleanSrc);
+
+		console.log('🧠 Media found:', found); // 👈 CEK DI SINI
+		console.log('src:', src);
+		console.log('cleanSrc:', cleanSrc);
+		console.log('mediaList:', mediaList);
+
+		featuredImageId = found?.id ?? null;
 
 		toast.push('✅ Gambar ini diset sebagai Featured Image!', {
 			theme: {
@@ -191,7 +169,6 @@
 			</div>
 			<div class="mx-2 h-6 w-[1.2px] bg-gray-500"></div>
 			<ImageInsertButton />
-			<FeaturedImageButton />
 			<SaveButton {onSave} />
 		</div>
 	</div>

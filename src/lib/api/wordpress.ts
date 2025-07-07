@@ -88,5 +88,15 @@ export async function uploadMedia(file: File) {
 
 // 📁 Ambil daftar media (gambar)
 export async function getMediaList() {
-	return await apiFetch('/wp/v2/media?per_page=100&_fields=id,source_url');
+	return await apiFetch(
+		'/wp/v2/media?per_page=100&_embed&' +
+			'_fields=id,source_url,date,mime_type,title,media_details,file,meta,_embedded'
+	);
 }
+
+export async function deleteMedia(id: number, force = true) {
+	return await apiFetch(`/wp/v2/media/${id}?force=true`, {
+		method: 'DELETE'
+	});
+}
+

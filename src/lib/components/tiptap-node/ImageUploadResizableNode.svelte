@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
 	import { NodeViewWrapper } from 'svelte-tiptap';
+	import { onInsertImage } from '$lib/stores/editor';
 
-	export let updateAttributes: (attrs: Record<string, any>) => void;
 	export let node: any;
+	export let editor: any;
+	export let getPos: () => number;
 
-	// Ambil fungsi upload gambar dari context global
-	const onInsertImage = getContext('onInsertImage') as (file: File) => Promise<string>;
+	let insertImage: (file: File) => Promise<{ src: string; id: number }>;
+	onInsertImage.subscribe((fn) => (insertImage = fn));
 
 	let wrapper: HTMLElement;
 	let fileInput: HTMLInputElement;
@@ -17,76 +18,62 @@
 
 	async function handleUpload(event: Event) {
 		const target = event.target as HTMLInputElement;
-		const file = target.files?.[0];
-		if (!file || !onInsertImage) return;
+		const file = target.files?.[0]; // ⬅️ pastikan ini ada
 
-		const src = await onInsertImage(file);
-		if (src) {
-			updateAttributes({ src });
+		if (!file || !insertImage) return;
+
+		const result = await insertImage(file); // ⬅️ ini sekarang sudah valid
+		if (!result || !result.src) return;
+
+		const pos = getPos?.();
+		if (typeof pos === 'number') {
+			const node = editor.schema.nodes.resizableImage.create({
+				src: result.src,
+				width: 'auto',
+				height: 'auto'
+			});
+
+			const tr = editor.state.tr.replaceWith(
+				pos,
+				pos + (editor.state.doc.nodeAt(pos)?.nodeSize || 1),
+				node
+			);
+			editor.view.dispatch(tr);
 		}
 	}
 
-	function handleResize(event: MouseEvent) {
-		const startX = event.clientX;
-		const startWidth = parseInt(getComputedStyle(wrapper).width, 10);
-
-		function resizeMove(e: MouseEvent) {
-			const newWidth = startWidth + (e.clientX - startX);
-			updateAttributes({ width: `${newWidth}px` });
+	function cancelNode() {
+		const pos = getPos?.();
+		if (typeof pos === 'number') {
+			const tr = editor.view.state.tr.delete(pos, pos + node.nodeSize);
+			editor.view.dispatch(tr);
 		}
-
-		function stopResize() {
-			document.removeEventListener('mousemove', resizeMove);
-			document.removeEventListener('mouseup', stopResize);
-		}
-
-		document.addEventListener('mousemove', resizeMove);
-		document.addEventListener('mouseup', stopResize);
 	}
 </script>
 
 <NodeViewWrapper>
-	<div bind:this={wrapper} class="group relative inline-block">
-		{#if node.attrs.src}
-			<img
-				src={node.attrs.src}
-				alt=""
-				style="width: {node.attrs.width}; height: {node.attrs.height}"
-				class="rounded shadow"
-			/>
-			<button
-				type="button"
-				class="resizer hidden group-hover:block"
-				aria-label="Resize image"
-				on:mousedown={handleResize}
-				tabindex="0"
-			></button>
-		{:else}
-			<button
-				type="button"
-				class="w-full cursor-pointer border border-dashed border-gray-400 p-4 text-center"
-				on:click={triggerUpload}
-			>
-				Click to upload image
-			</button>
-			<input
-				type="file"
-				accept="image/*"
-				bind:this={fileInput}
-				on:change={handleUpload}
-				class="hidden"
-			/>
-		{/if}
+	<div
+		bind:this={wrapper}
+		class="flex flex-col items-center gap-2 border border-dashed border-gray-400 p-4 text-center"
+	>
+		<button
+			type="button"
+			class="w-full cursor-pointer border border-dashed border-gray-400 px-4 py-2 text-sm"
+			on:click={triggerUpload}
+		>
+			Click to upload image
+		</button>
+
+		<button type="button" class="text-xs text-gray-500 underline" on:click={cancelNode}>
+			Cancel
+		</button>
+
+		<input
+			type="file"
+			accept="image/*"
+			bind:this={fileInput}
+			on:change={handleUpload}
+			class="hidden"
+		/>
 	</div>
 </NodeViewWrapper>
-
-<style>
-	.resizer {
-		width: 8px;
-		height: 100%;
-		position: absolute;
-		right: 0;
-		top: 0;
-		cursor: ew-resize;
-	}
-</style>

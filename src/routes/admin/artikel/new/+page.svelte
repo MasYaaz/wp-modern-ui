@@ -1,67 +1,54 @@
 <script lang="ts">
+	import TiptapEditor from '$lib/components/TiptapEditor.svelte';
 	import { createPost } from '$lib/api/wordpress';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { toast } from '@zerodevx/svelte-toast';
+	import { handleImageUpload } from '$lib/stores/upload';
+	import { resetPosts } from '$lib/stores/posts';
 
-	let title = '', content = '', error = '', success = '', saving = false;
+	let title = '';
+	let content = '';
+	let featuredImageId: number | null = null;
+	let featuredImage = '';
 
-	onMount(() => {
-		const token = localStorage.getItem('token');
-		if (!token) goto('/login');
-	});
-
-	async function savePost() {
-		saving = true;
-		error = '';
-		success = '';
-
+	async function handleSave() {
 		try {
-			const res = await createPost({
+			const post = await createPost({
 				title,
 				content,
 				status: 'publish'
 			});
 
-			success = 'Post berhasil dibuat';
-			goto(`/posts/${res.id}`); // arahkan ke halaman edit post
-		} catch (err: any) {
-			error = err.message;
-		} finally {
-			saving = false;
+			if (post?.id) {
+				resetPosts();
+				toast.push('✅ Artikel berhasil disimpan!', {
+					theme: {
+						'--toastBackground': '#2563eb',
+						'--toastColor': 'white'
+					}
+				});
+				goto(`/admin/artikel`);
+			} else {
+				toast.push('❌ Gagal menyimpan artikel.');
+			}
+		} catch (error) {
+			console.error(error);
+			toast.push('❌ Terjadi kesalahan saat menyimpan artikel.');
 		}
 	}
+
 </script>
 
-<div class="p-6 max-w-3xl mx-auto">
-	<h1 class="text-2xl font-bold mb-4 text-gray-800">Tambah Post Baru</h1>
+<main class="space-y-4 p-6">
+	<h1 class="text-2xl font-semibold">Tambah Artikel</h1>
 
-	<div class="space-y-4">
-		{#if error}
-			<p class="text-red-600">{error}</p>
-		{/if}
-		{#if success}
-			<p class="text-green-600">{success}</p>
-		{/if}
-
-		<input
-			type="text"
-			bind:value={title}
-			class="w-full p-2 border rounded"
-			placeholder="Judul post"
-		/>
-
-		<textarea
-			bind:value={content}
-			class="w-full p-3 border rounded min-h-[200px]"
-			placeholder="Konten post (HTML)"
-		></textarea>
-
-		<button
-			on:click={savePost}
-			class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-			disabled={saving}
-		>
-			{saving ? 'Menyimpan...' : 'Simpan'}
-		</button>
-	</div>
-</div>
+	<TiptapEditor
+		{content}
+		onUpdate={(html) => (content = html)}
+		bind:title
+		bind:featuredImage
+		bind:featuredImageId
+		onSave={handleSave}
+		onInsertImage={handleImageUpload}
+	/>
+</main>

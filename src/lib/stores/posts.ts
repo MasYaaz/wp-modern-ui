@@ -17,7 +17,7 @@ export async function loadPosts() {
 	postsLoaded.set(true);
 }
 
-// 🧹 Reset semua post (cache kosong)
+// 🧹 Kosongkan cache, agar fungsi loadPosts() bisa jalan lagi dari.
 export function resetPosts() {
 	posts.set([]);
 	postsLoaded.set(false);

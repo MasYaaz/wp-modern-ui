@@ -3,10 +3,9 @@
 	import { page } from '$app/stores';
 	import TiptapEditor from '$lib/components/TiptapEditor.svelte';
 	import { loadPost, updatePostCache, currentPost } from '$lib/stores/posts';
-	import { uploadMedia } from '$lib/api/wordpress';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { convertGutenbergImagesToResizable } from '$lib/utils/Converter';
-	import { getMediaList } from '$lib/api/wordpress';
+	import { handleImageUpload } from '$lib/stores/upload';
 
 	let title = '';
 	let content = '';
@@ -14,7 +13,6 @@
 	let featuredImageId: number | null = null;
 
 	let error = '';
-	let success = '';
 	let loading = true;
 	let saving = false;
 
@@ -66,17 +64,9 @@
 		} finally {
 			saving = false;
 		}
-	}
-
-	async function handleImageUpload(file: File): Promise<string> {
-		try {
-			const res = await uploadMedia(file);
-			featuredImage = res.source_url;
-			featuredImageId = res.id;
-			return res.source_url; // ✅ return URL untuk dimasukkan ke editor
-		} catch (e: any) {
-			error = e.message || 'Upload gambar gagal.';
-			return ''; // ✅ tetap return string kosong jika gagal
+		if (!featuredImageId) {
+			toast.push('🚫 Pilih featured image dulu!');
+			return;
 		}
 	}
 </script>
@@ -98,6 +88,8 @@
 			{content}
 			onUpdate={(html) => (content = html)}
 			{title}
+			bind:featuredImage
+			bind:featuredImageId
 			onTitleChange={(val) => (title = val)}
 			onInsertImage={handleImageUpload}
 			onSave={save}

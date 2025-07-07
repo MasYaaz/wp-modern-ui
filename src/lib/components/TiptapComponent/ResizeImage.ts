@@ -56,22 +56,6 @@ export const ResizableImage = Node.create({
 
 			outer.appendChild(img);
 
-			// 🌐 Tambahkan badge jika embedded
-			if (node.attrs.embedded) {
-				const badge = document.createElement('span');
-				badge.textContent = '🌐 Embed';
-				badge.style.position = 'absolute';
-				badge.style.top = '0';
-				badge.style.left = '0';
-				badge.style.background = 'rgba(0, 0, 0, 0.6)';
-				badge.style.color = 'white';
-				badge.style.padding = '2px 6px';
-				badge.style.fontSize = '10px';
-				badge.style.borderRadius = '0 0 4px 0';
-				badge.style.zIndex = '10';
-				outer.appendChild(badge);
-			}
-
 			// ✅ Tambahkan tombol "Set as Featured"
 			const btn = document.createElement('button');
 			btn.textContent = 'Set Featured';
@@ -97,7 +81,7 @@ export const ResizableImage = Node.create({
 			};
 			outer.appendChild(btn);
 
-			// ✋ Handle resize kalau bukan embed
+			// ✋ Handle resize
 			if (!node.attrs.embedded) {
 				const handle = document.createElement('span');
 				handle.style.position = 'absolute';
@@ -107,6 +91,7 @@ export const ResizableImage = Node.create({
 				handle.style.height = '12px';
 				handle.style.background = 'rgba(0, 0, 0, 0.5)';
 				handle.style.cursor = 'nwse-resize';
+				handle.style.background = 'transparent';
 				handle.style.borderRadius = '50%';
 				handle.style.zIndex = '10';
 
