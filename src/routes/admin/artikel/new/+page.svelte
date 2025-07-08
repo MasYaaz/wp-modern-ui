@@ -5,6 +5,7 @@
 	import { toast } from '@zerodevx/svelte-toast';
 	import { handleImageUpload } from '$lib/stores/upload';
 	import { resetPosts } from '$lib/stores/posts';
+	import { resetCounts } from '$lib/stores/count';
 
 	let title = '';
 	let content = '';
@@ -20,6 +21,7 @@
 			});
 
 			if (post?.id) {
+				resetCounts();
 				resetPosts();
 				toast.push('✅ Artikel berhasil disimpan!', {
 					theme: {

@@ -82,12 +82,12 @@
 </script>
 
 
-<div class="mx-auto w-full space-y-6 p-4">
-	<h1 class="text-2xl font-bold">Media Library</h1>
+<div class="mx-auto w-full space-y-6 pt-0 p-4">
+	<h1 class="text-2xl font-bold">Media Pustaka</h1>
 
 	<!-- Upload form -->
 	<div class="space-y-2 rounded-lg bg-white p-4 shadow-lg">
-		<input type="file" multiple accept="image/*" on:change={handleFileChange} />
+		<input type="file" multiple accept="image/*" class="hover:text-blue-600 hover:cursor-pointer" on:change={handleFileChange} />
 
 		<button
 			on:click={handleUpload}
@@ -106,7 +106,7 @@
 	</div>
 
 	<!-- Media list -->
-	<div class="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
+	<div class="grid grid-cols-3 gap-4 md:grid-cols-6 xl:grid-cols-9 2xl:grid-cols-12">
 		{#each $mediaList as media}
 			<!-- 📦 Pembungkus utama -->
 			<div
@@ -137,7 +137,7 @@
 				<!-- 🟥 Tombol hapus -->
 				<button
 					type="button"
-					class="absolute top-2 right-2 hidden rounded p-1 text-xs text-white group-hover:block hover:cursor-pointer hover:text-red-700"
+					class="absolute top-1 right-1 hidden rounded p-1 text-xs text-white group-hover:block hover:cursor-pointer hover:text-red-700"
 					on:click|stopPropagation={() => handleDelete(media.id)}
 					aria-label="hapus media"
 				>

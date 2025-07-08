@@ -33,15 +33,15 @@
 <!-- Sidebar -->
 <div
 	class={`z-50 flex flex-col bg-white transition-all duration-300
-		${$sidebarCollapsed ? 'w-[64px]' : 'w-60'}
+		${$sidebarCollapsed ? 'w-[3rem]' : 'w-55'}
 		md:flex 
-		${$sidebarOpen ? 'fixed inset-y-0 left-0 w-[70%] flex flex-col translate-x-0 shadow-lg' : 'fixed inset-y-0 left-0 -translate-x-full'}
+		${$sidebarOpen ? 'fixed inset-y-0 left-0 flex w-[70%] translate-x-0 flex-col shadow-lg' : 'fixed inset-y-0 left-0 -translate-x-full'}
 		md:relative md:translate-x-0 md:shadow-none
 	`}
 >
 	<!-- Menu -->
-	<nav class="mt-0 md:mt-4 flex-1 space-y-1 overflow-y-auto">
-		<div class="md:hidden px-1 w-full">
+	<nav class="mt-0 flex-1 space-y-1 overflow-y-auto md:mt-4">
+		<div class="w-full px-1 md:hidden">
 			<img src="../logo-light.svg" class="w-30" alt="logo besar" />
 		</div>
 		{#each menuItems as item}
@@ -50,15 +50,25 @@
 				on:click={() => sidebarOpen.set(false)}
 				class="sidebar-item flex items-center gap-3 px-4 py-2 text-sm font-bold transition hover:bg-blue-50 hover:text-blue-600"
 			>
+				<!-- Icon -->
 				{#if item.iconType === 'fa'}
-					<FontAwesomeIcon icon={item.icon as import('@fortawesome/fontawesome-svg-core').IconDefinition} class="w-6 text-base"/>
+					<FontAwesomeIcon
+						icon={item.icon as import('@fortawesome/fontawesome-svg-core').IconDefinition}
+						class="w-6 h-6 text-base"
+					/>
 				{:else if item.iconType === 'lucide'}
-					<item.icon class="w-6" size="18" strokeWidth="2.3"/>
+					<item.icon class="w-6 h-[17px] min-w-[17px]" size="18" strokeWidth="2.8" />
 				{/if}
 
-				{#if !$sidebarCollapsed || $sidebarOpen}
-					<span>{item.label}</span>
-				{/if}
+				<!-- Label -->
+				<span
+					class="inline-block whitespace-nowrap origin-left transition-all duration-200"
+					class:opacity-0={$sidebarCollapsed && !$sidebarOpen}
+					class:w-0={$sidebarCollapsed && !$sidebarOpen}
+					class:overflow-hidden={$sidebarCollapsed && !$sidebarOpen}
+				>
+					{item.label}
+				</span>
 			</a>
 		{/each}
 	</nav>

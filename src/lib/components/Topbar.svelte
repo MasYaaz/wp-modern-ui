@@ -60,13 +60,13 @@
 <header class="flex items-center bg-white pr-3 shadow md:pr-6">
 	<!-- Logo -->
 	<div
-		class={`hidden w-fit justify-center gap-2 md:flex ${$sidebarCollapsed ? 'px-[13px] py-2' : 'px-12 py-2'}`}
+		class={`hidden w-fit justify-center items-center p-2 md:flex ${$sidebarCollapsed ? 'w-[44px]' : 'w-55 px-9'}`}
 	>
 		{#if !$sidebarCollapsed}
 			<img src="/logo-p-light.svg" class="w-44" alt="logo besar" />
 		{/if}
 		{#if $sidebarCollapsed}
-			<img src="/logo-light.svg" class="w-10" alt="logo kecil" />
+			<img src="/logo-light.svg" class="w-8" alt="logo kecil" />
 		{/if}
 	</div>
 	<div class="flex px-2 md:px-0 w-full items-center justify-between">
@@ -98,7 +98,7 @@
 				class="flex items-center gap-2 transition-transform duration-300 hover:scale-110 hover:cursor-pointer focus:outline-none"
 			>
 				{#if user.avatarUrl}
-					<img src={user.avatarUrl} alt="User avatar" class="h-10 w-10 md:w-15 md:h-15 p-1 object-cover" />
+					<img src={user.avatarUrl} alt="User avatar" class="h-8 w-8 md:w-10 md:h-10 lg:w-12 lg:h-12 p-1 object-cover" />
 				{:else}
 					<div
 						class="flex h-10 w-10 items-center justify-center rounded-full font-semibold text-black"
